@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SimpleStream · Home</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="app-bar">
+      <a class="brand" href="#home"
+        ><span class="brand-mark">s</span>SimpleStream<span class="alpha"
+          >PREVIEW</span
+        ></a
+      >
+      <nav id="page-nav" aria-label="Pages"></nav>
+      <button id="new-page" class="subtle">＋ New page</button
+      ><button
+        id="profile"
+        class="profile-button"
+        aria-label="Personalize your workspace"
+      >
+        ✦
+      </button>
+    </div>
+    <main id="pages"><p class="loading">Making room for you…</p></main>
+    <footer>
+      <span>YOUR SPACE. YOUR STREAM.</span
+      ><span id="status" role="status">Everything runs on this computer</span>
+    </footer>
+    <div id="dialogs"></div>
+    <dialog id="tour-dialog">
+      <span id="tour-step" class="eyebrow"></span>
+      <div id="tour-icon" class="tour-icon">⌂</div>
+      <h2 id="tour-title"></h2>
+      <p id="tour-description"></p>
+      <div class="dialog-actions">
+        <button id="tour-skip" class="subtle">Maybe later</button
+        ><button id="tour-next" class="primary">Next</button>
+      </div>
+    </dialog>
+    <dialog id="profile-dialog">
+      <form id="profile-form">
+        <span class="eyebrow">MAKE YOURSELF AT HOME</span>
+        <h2 class="spaced">What should we call you?</h2>
+        <label
+          >Your name<input
+            id="display-name"
+            maxlength="32"
+            placeholder="Creator"
+            autocomplete="nickname"
+        /></label>
+        <div class="dialog-actions">
+          <button type="button" data-close="profile-dialog" class="subtle">
+            Cancel</button
+          ><button class="primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="page-dialog">
+      <form id="page-form">
+        <span class="eyebrow">A SPACE THAT WORKS YOUR WAY</span>
+        <h2 class="spaced" id="page-dialog-title">Create a page</h2>
+        <label
+          >Page name<input
+            id="page-name"
+            required
+            maxlength="40"
+            placeholder="My stream desk"
+            autocomplete="off"
+        /></label>
+        <p class="hint spaced">
+          Add any combination of previews, chat, alerts, viewers, and browser
+          docks.
+        </p>
+        <div class="dialog-actions">
+          <button type="button" data-close="page-dialog" class="subtle">
+            Cancel</button
+          ><button class="primary" id="page-submit">Create page</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="widget-dialog">
+      <form id="widget-form">
+        <span class="eyebrow">BUILD YOUR CONTROL ROOM</span>
+        <h2 class="spaced">Add an element</h2>
+        <label
+          >Element<select id="widget-type">
+            <option value="avatar">Avatar preview</option>
+            <option value="chat">Combined chat</option>
+            <option value="alerts">Alert list</option>
+            <option value="viewers">Current viewers</option>
+            <option value="browser">Browser dock</option>
+          </select></label
+        >
+        <div id="dock-fields" hidden>
+          <label
+            >Dock name<input
+              id="dock-name"
+              maxlength="40"
+              placeholder="My browser dock" /></label
+          ><label
+            >Website URL<input id="dock-url" type="url" placeholder="https://…"
+          /></label>
+          <p class="hint">
+            HTTPS websites and local HTTP tools are supported. Some sites
+            restrict embedded login. Pop-up windows are blocked.
+          </p>
+        </div>
+        <p id="widget-error" class="error" role="alert"></p>
+        <div class="dialog-actions">
+          <button type="button" data-close="widget-dialog" class="subtle">
+            Cancel</button
+          ><button class="primary">Add element</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="delete-dialog">
+      <h2>Delete this page?</h2>
+      <p class="spaced">
+        Its layout and browser docks will be removed. Your avatar settings and
+        other pages will stay.
+      </p>
+      <div class="dialog-actions">
+        <button class="subtle" data-close="delete-dialog">Keep page</button
+        ><button id="confirm-delete" class="danger">Delete page</button>
+      </div>
+    </dialog>
+    <video id="webcam" muted playsinline hidden></video>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

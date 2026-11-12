@@ -1,0 +1,155 @@
+<header class="page-heading">
+  <div>
+    <div class="eyebrow">A LITTLE MORE YOU</div>
+    <h1>Avatar</h1>
+    <p>Find your look. Make it yours. Bring it to life.</p>
+  </div>
+  <span class="badge">Local face tracking</span>
+</header>
+<div class="avatar-layout">
+  <div class="avatar-workbench">
+    <section class="card avatar-card">
+      <div class="card-heading">
+        <div>
+          <h2>Avatar studio</h2>
+          <p>Your character. Your expressions.</p>
+        </div>
+        <span id="tracking-status" class="badge">Camera off</span>
+      </div>
+      <div class="stage">
+        <div class="stage-label">
+          LIVE PREVIEW <span>TRANSPARENT OUTPUT</span>
+        </div>
+        <canvas
+          id="avatar"
+          width="800"
+          height="650"
+          aria-label="Animated avatar preview"
+        ></canvas
+        ><span class="stage-caption">Make yourself at home.</span>
+      </div>
+      <div class="toolbar">
+        <button id="camera" class="primary">◎ &nbsp; Start face tracking</button
+        ><label class="button subtle"
+          >↑ Import PNG<input
+            id="upload"
+            type="file"
+            accept="image/png"
+            hidden /></label
+        ><button id="reset" class="subtle">Reset</button>
+      </div>
+      <p id="camera-message" class="hint" role="status">
+        Camera stays local. Import a transparent PNG, then position its eyes and
+        mouth below.
+      </p>
+      <div class="controls">
+        <label
+          >Eye height
+          <input
+            data-setting="eyesY"
+            type="range"
+            min="10"
+            max="80"
+            value="43" /></label
+        ><label
+          >Eye spacing
+          <input
+            data-setting="spacing"
+            type="range"
+            min="5"
+            max="40"
+            value="20" /></label
+        ><label
+          >Mouth height
+          <input
+            data-setting="mouthY"
+            type="range"
+            min="20"
+            max="90"
+            value="65" /></label
+        ><label
+          >Avatar size
+          <input
+            data-setting="size"
+            type="range"
+            min="50"
+            max="130"
+            value="100"
+        /></label>
+      </div>
+    </section>
+    <section class="card output">
+      <div>
+        <h2>Ready for your scene</h2>
+        <p>
+          Add this URL as an OBS Browser Source. Set the source to 800 × 650.
+        </p>
+        <code id="overlay-url"></code>
+      </div>
+      <button id="copy" class="subtle">Copy URL</button>
+    </section>
+    <section class="card lens">
+      <span class="lens-icon">✦</span>
+      <div>
+        <h2>A place for your lenses</h2>
+        <p>
+          Snap Camera Kit is a planned integration. Lens access and Electron
+          compatibility still need validation.
+        </p>
+      </div>
+      <span class="badge">Planned</span>
+    </section>
+  </div>
+  <div class="avatar-library">
+    <section class="card">
+      <div class="card-heading">
+        <div>
+          <h2>Your looks</h2>
+          <p>A character for every kind of stream.</p>
+        </div>
+      </div>
+      <div class="look-list">
+        <button class="look selected" id="built-in-look">
+          <span class="look-thumb">✦</span
+          ><span
+            ><strong>Mooncat</strong
+            ><small>Built-in · ready to use</small></span
+          ><span>✓</span></button
+        ><label class="look import-look" for="upload"
+          ><span class="look-thumb">＋</span
+          ><span
+            ><strong>Your own character</strong
+            ><small>Import a transparent PNG</small></span
+          ></label
+        >
+        <div id="current-asset" class="hint">Mooncat is your current look.</div>
+      </div>
+    </section>
+    <section class="card">
+      <div class="card-heading">
+        <div>
+          <h2>Expression check</h2>
+          <p>Try your features before going live.</p>
+        </div>
+      </div>
+      <div class="expression-buttons">
+        <button class="subtle" data-expression="neutral">Neutral</button
+        ><button class="subtle" data-expression="blink">Blink</button
+        ><button class="subtle" data-expression="talk">Talk</button>
+      </div>
+      <p class="hint padded">Stop tracking to try these expressions.</p>
+    </section>
+    <section class="card padded">
+      <span class="eyebrow">YOUR WORKFLOW</span>
+      <h2 class="spaced">Pick. Preview. Personalize.</h2>
+      <p>
+        Choose a look, align its features, then add the transparent output to
+        OBS. Your avatar keeps tracking while you use other pages.
+      </p>
+      <p class="hint spaced">
+        PNG looks are available now. AR lenses and Lens Studio assets will have
+        their own library when Camera Kit is connected.
+      </p>
+    </section>
+  </div>
+</div>

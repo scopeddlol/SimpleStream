@@ -1,0 +1,28 @@
+appId: com.simplestream.desktop
+productName: SimpleStream
+asar: true
+directories:
+  output: dist
+files:
+  - desktop.cjs
+  - browser-docks.cjs
+  - dock-policy.cjs
+  - preload.cjs
+  - server.js
+  - public/**/*
+  - package.json
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: zip
+      arch: [x64]
+  artifactName: SimpleStream-${version}-windows-${arch}.${ext}
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+publish: null

@@ -1,0 +1,32 @@
+{
+  "name": "simplestream",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A modular Windows control hub for avatars, chat, alerts and browser docks",
+  "type": "module",
+  "main": "desktop.cjs",
+  "scripts": {
+    "start": "electron .",
+    "preview": "node server.js",
+    "setup:tracking": "node scripts/download-model.js",
+    "test": "node --test",
+    "test:desktop": "node scripts/smoke.js",
+    "check": "node scripts/check.js",
+    "check:public": "node scripts/check-public.js",
+    "build:win": "node scripts/build-windows.js",
+    "test:packaged": "node scripts/smoke.js --packaged",
+    "checksums": "node scripts/checksums.js"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "1.2.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "electron": "45.3.1",
+    "electron-builder": "26.18.0"
+  },
+  "author": "SimpleStream contributors",
+  "overrides": {
+    "minimatch": "11.0.8"
+  }
+}

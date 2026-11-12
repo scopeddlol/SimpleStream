@@ -1,0 +1,96 @@
+name: Windows CI and builds
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
+
+jobs:
+  test:
+    name: Tests and responsive desktop checks
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run check:public
+      - run: npm test
+      - run: npm run setup:tracking
+      - run: npm run test:desktop
+
+  build:
+    name: Windows x64 installer and ZIP
+    needs: test
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - run: npm run setup:tracking
+      - name: Verify tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: pwsh
+        run: |
+          $version = node -p "require('./package.json').version"
+          if ($env:GITHUB_REF_NAME -ne "v$version") { throw 'Tag must match package.json version.' }
+      - run: npm run build:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      - name: Smoke test the packaged application
+        run: npm run test:packaged
+      - run: npm run checksums
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: SimpleStream-windows-x64
+          path: |
+            dist/*.exe
+            dist/*.zip
+            dist/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14
+
+  release:
+    name: Prepare draft Windows release
+    if: startsWith(github.ref, 'refs/tags/') && github.event_name == 'push'
+    needs: build
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Download tested Windows artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh run download $env:GITHUB_RUN_ID --name SimpleStream-windows-x64 --dir release --repo $env:GITHUB_REPOSITORY
+      - name: Create draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          'Unsigned Windows preview builds. Includes the x64 installer, portable ZIP, and SHA-256 checksums. Review and publish this draft when ready.' | Set-Content release-notes.txt
+          $assets = Get-ChildItem release -File | ForEach-Object FullName
+          gh release create $env:GITHUB_REF_NAME @assets --draft --prerelease --verify-tag --title "SimpleStream $env:GITHUB_REF_NAME" --notes-file release-notes.txt --repo $env:GITHUB_REPOSITORY
