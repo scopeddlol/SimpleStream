@@ -38,6 +38,9 @@ let app;
 try {
   app = await electron.launch(options);
   const page = await app.firstWindow({ timeout: 20000 });
+  // Hosted Windows runners can start with a small virtual monitor. Keep the
+  // baseline deterministic; the responsive checks exercise other sizes below.
+  await page.setViewportSize({ width: 1440, height: 960 });
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await expect(page.locator("#welcome-title")).toBeVisible();
@@ -266,6 +269,7 @@ try {
   await app.close();
   app = await electron.launch(options);
   const reopened = await app.firstWindow({ timeout: 20000 });
+  await reopened.setViewportSize({ width: 1440, height: 960 });
   await expect(reopened.locator("#welcome-title")).toHaveText(
     "Welcome home, Creator.",
   );
