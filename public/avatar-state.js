@@ -54,7 +54,8 @@ export const layoutRanges = {
 export function validateState(previous, input) {
   if (!input || typeof input !== "object" || Array.isArray(input))
     throw Error("Invalid state");
-  const next = structuredClone(previous);
+  // Artwork is immutable. Do not copy a multi-megabyte PNG on every pose update.
+  const next = { ...previous, layout: { ...previous.layout }, pose: { ...previous.pose } };
   if (input.avatar !== undefined) {
     if (
       input.avatar !== null &&

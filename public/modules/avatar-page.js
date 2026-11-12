@@ -587,6 +587,7 @@ export async function initAvatar() {
         mapper = new PoseMapper(preferences);
         tracker = new FaceTracker(
           (result) => {
+            if(!stream||mode!=='png')return;
             lastResult = result;
             processed++;
             const mapped = mapper.update(
