@@ -15,18 +15,27 @@
     "check:public": "node scripts/check-public.js",
     "build:win": "node scripts/build-windows.js",
     "test:packaged": "node scripts/smoke.js --packaged",
-    "checksums": "node scripts/checksums.js"
+    "checksums": "node scripts/checksums.js",
+    "build:sdk": "node scripts/build-sdk.js",
+    "prestart": "npm run build:sdk",
+    "prepreview": "npm run build:sdk",
+    "pretest:desktop": "node scripts/prepare-desktop-checks.js",
+    "setup:test": "node scripts/download-test-fixture.js",
+    "pretest:packaged": "node scripts/download-test-fixture.js"
   },
   "dependencies": {
-    "@mediapipe/tasks-vision": "1.2.3"
+    "@mediapipe/tasks-vision": "1.2.3",
+    "@snap/camera-kit": "1.23.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.0",
     "electron": "45.3.1",
-    "electron-builder": "26.18.0"
+    "electron-builder": "26.18.0",
+    "esbuild": "0.28.2"
   },
   "author": "SimpleStream contributors",
   "overrides": {
-    "minimatch": "11.0.8"
+    "minimatch": "11.0.8",
+    "uuid": "11.1.1"
   }
 }

@@ -7,6 +7,8 @@ files:
   - desktop.cjs
   - browser-docks.cjs
   - dock-policy.cjs
+  - avatar-tools.cjs
+  - media-relay.js
   - preload.cjs
   - server.js
   - public/**/*

@@ -6,9 +6,35 @@ const avatarViews = new Set(),
   alertViews = new Set();
 document.addEventListener("avatar-frame", (event) => {
   avatarState = event.detail;
-  for (const canvas of avatarViews)
-    drawAvatar(canvas, avatarState.image, avatarState.layout, avatarState.pose);
+  for (const entry of avatarViews) renderAvatarPreview(entry);
 });
+function renderAvatarPreview(entry) {
+  const source = avatarState.outputCanvas;
+  if (source) {
+    if (entry.source !== source) {
+      entry.stream?.getTracks().forEach((track) => track.stop());
+      entry.source = source;
+      entry.stream = source.captureStream(30);
+      entry.video.srcObject = entry.stream;
+      entry.video.play().catch(() => {});
+    }
+    entry.canvas.hidden = true;
+    entry.video.hidden = false;
+  } else {
+    entry.stream?.getTracks().forEach((track) => track.stop());
+    entry.stream = null;
+    entry.source = null;
+    entry.video.srcObject = null;
+    entry.video.hidden = true;
+    entry.canvas.hidden = false;
+    drawAvatar(
+      entry.canvas,
+      avatarState.image,
+      avatarState.layout,
+      avatarState.pose,
+    );
+  }
+}
 const messages = [
   {
     platform: "Twitch",
@@ -77,17 +103,28 @@ export function mountWidget(item, host) {
     canvas.width = 800;
     canvas.height = 650;
     canvas.setAttribute("aria-label", "Shared avatar preview");
+    const video = node("video");
+    video.muted = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.hidden = true;
     host.append(
       canvas,
+      video,
       node(
         "p",
         "preview-hint",
         "Tracking and appearance are controlled on the Avatar page.",
       ),
     );
-    avatarViews.add(canvas);
-    drawAvatar(canvas, avatarState.image, avatarState.layout, avatarState.pose);
-    return () => avatarViews.delete(canvas);
+    const entry = { canvas, video, source: null, stream: null };
+    avatarViews.add(entry);
+    renderAvatarPreview(entry);
+    return () => {
+      avatarViews.delete(entry);
+      entry.stream?.getTracks().forEach((track) => track.stop());
+      video.srcObject = null;
+    };
   }
   if (item.type === "viewers") {
     host.classList.add("viewer-widget");

@@ -4,9 +4,13 @@ body {
   background: transparent;
   overflow: hidden;
 }
-canvas {
+canvas,
+video {
   display: block;
   width: 100vw;
   height: 100vh;
   object-fit: contain;
+}
+[hidden] {
+  display: none !important;
 }

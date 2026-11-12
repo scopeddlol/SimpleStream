@@ -24,7 +24,7 @@ async function boot() {
   document.querySelector("#dialogs").innerHTML = await dialogs.text();
   initDocks();
   initWorkspace();
-  initAvatar();
+  await initAvatar();
   initHome();
   for (const button of document.querySelectorAll("[data-close]"))
     button.onclick = () =>

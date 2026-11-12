@@ -1,24 +1,37 @@
 <header class="page-heading">
   <div>
-    <div class="eyebrow">A LITTLE MORE YOU</div>
-    <h1>Avatar</h1>
-    <p>Find your look. Make it yours. Bring it to life.</p>
+    <div class="eyebrow">YOUR CHARACTER. YOUR CAMERA. YOUR LOOK.</div>
+    <h1 tabindex="-1">Avatar</h1>
+    <p>Bring a character to life, or step into a Lens Studio lens.</p>
   </div>
-  <span class="badge">Local face tracking</span>
+  <span id="tracking-status" class="badge">Camera off</span>
 </header>
+<div
+  id="avatar-mode"
+  class="mode-switch"
+  role="group"
+  aria-label="Avatar engine"
+>
+  <button class="selected" data-mode="png" aria-pressed="true">
+    ✦ PNG avatar</button
+  ><button data-mode="lens" aria-pressed="false">◉ AR lenses</button>
+</div>
 <div class="avatar-layout">
   <div class="avatar-workbench">
     <section class="card avatar-card">
       <div class="card-heading">
         <div>
-          <h2>Avatar studio</h2>
-          <p>Your character. Your expressions.</p>
+          <h2 id="preview-title">Avatar studio</h2>
+          <p id="preview-subtitle">
+            Blink, talk, and move. Your character follows.
+          </p>
         </div>
-        <span id="tracking-status" class="badge">Camera off</span>
+        <span id="engine-status" class="badge muted">MediaPipe · local</span>
       </div>
-      <div class="stage">
+      <div class="stage avatar-stage">
         <div class="stage-label">
-          LIVE PREVIEW <span>TRANSPARENT OUTPUT</span>
+          <span id="stage-kind">LIVE PREVIEW</span
+          ><span id="stage-output-kind">TRANSPARENT OUTPUT</span>
         </div>
         <canvas
           id="avatar"
@@ -26,106 +39,269 @@
           height="650"
           aria-label="Animated avatar preview"
         ></canvas
-        ><span class="stage-caption">Make yourself at home.</span>
+        ><canvas
+          id="lens-preview"
+          width="1280"
+          height="720"
+          aria-label="Camera Kit lens preview"
+          hidden
+        ></canvas>
+        <div id="lens-empty" class="lens-empty" hidden>
+          <span>◉</span>
+          <h3>Your next look is waiting.</h3>
+          <p>Set up Camera Kit, load your lenses, and start the camera.</p>
+        </div>
+        <span class="stage-caption" id="stage-caption"
+          >Align your features, then let your expressions do the talking.</span
+        >
+      </div>
+      <div class="camera-source">
+        <label
+          >Camera<select id="camera-device" aria-label="Camera device">
+            <option value="">Default camera</option>
+          </select></label
+        ><label
+          >Quality<select id="camera-quality">
+            <option value="balanced">Balanced · 640 × 480</option>
+            <option value="hd">HD · 1280 × 720</option>
+          </select></label
+        ><label data-png-only
+          >Tracking rate<select id="tracking-fps">
+            <option value="30">30 FPS target</option>
+            <option value="15">15 FPS · lighter CPU</option>
+          </select></label
+        >
       </div>
       <div class="toolbar">
-        <button id="camera" class="primary">◎ &nbsp; Start face tracking</button
-        ><label class="button subtle"
+        <button id="camera" class="primary">◎ Start face tracking</button
+        ><button id="calibrate" class="subtle" data-png-only>
+          Center &amp; calibrate</button
+        ><label class="button subtle" data-png-only
           >↑ Import PNG<input
             id="upload"
             type="file"
             accept="image/png"
             hidden /></label
-        ><button id="reset" class="subtle">Reset</button>
+        ><button id="reset" class="subtle" data-png-only>Reset features</button>
       </div>
       <p id="camera-message" class="hint" role="status">
-        Camera stays local. Import a transparent PNG, then position its eyes and
-        mouth below.
+        Camera off. Pick a look or import a transparent PNG to get started.
       </p>
-      <div class="controls">
+      <div class="camera-options">
         <label
-          >Eye height
-          <input
-            data-setting="eyesY"
-            type="range"
-            min="10"
-            max="80"
-            value="43" /></label
-        ><label
-          >Eye spacing
-          <input
-            data-setting="spacing"
-            type="range"
-            min="5"
-            max="40"
-            value="20" /></label
-        ><label
-          >Mouth height
-          <input
-            data-setting="mouthY"
-            type="range"
-            min="20"
-            max="90"
-            value="65" /></label
-        ><label
-          >Avatar size
-          <input
-            data-setting="size"
-            type="range"
-            min="50"
-            max="130"
-            value="100"
-        /></label>
+          ><input type="checkbox" id="mirror-camera" checked /> Mirror
+          movement</label
+        ><label data-png-only
+          ><input type="checkbox" id="show-camera" /> Show local camera
+          preview</label
+        ><label data-png-only
+          ><input type="checkbox" id="align-features" checked /> Drag facial
+          features</label
+        >
+      </div>
+      <div id="camera-diagnostics" class="tracking-diagnostics" data-png-only>
+        <span><b id="tracking-fps-value">—</b> FPS</span
+        ><span><b id="face-state">Camera off</b></span
+        ><span>Mouth <b id="mouth-value">0%</b></span
+        ><span>Blink <b id="blink-value">0%</b></span>
+      </div>
+      <canvas
+        id="camera-preview"
+        width="320"
+        height="240"
+        aria-label="Local camera tracking preview"
+        hidden
+      ></canvas>
+      <div class="feature-settings" data-png-only>
+        <div class="settings-title">
+          <h3>Fit your features</h3>
+          <p>While tracking is off, drag the eyes or mouth in the preview.</p>
+        </div>
+        <div class="controls">
+          <label
+            >Eye height
+            <input data-setting="eyesY" type="range" min="10" max="80" /></label
+          ><label
+            >Eye position
+            <input
+              data-setting="eyesX"
+              type="range"
+              min="-40"
+              max="40" /></label
+          ><label
+            >Eye spacing
+            <input
+              data-setting="spacing"
+              type="range"
+              min="5"
+              max="40" /></label
+          ><label
+            >Eye size
+            <input
+              data-setting="eyeScale"
+              type="range"
+              min="40"
+              max="180" /></label
+          ><label
+            >Mouth height
+            <input
+              data-setting="mouthY"
+              type="range"
+              min="20"
+              max="90" /></label
+          ><label
+            >Mouth position
+            <input
+              data-setting="mouthX"
+              type="range"
+              min="-40"
+              max="40" /></label
+          ><label
+            >Mouth size
+            <input
+              data-setting="mouthScale"
+              type="range"
+              min="40"
+              max="180" /></label
+          ><label
+            >Avatar size
+            <input data-setting="size" type="range" min="50" max="130"
+          /></label>
+        </div>
+        <div class="style-controls">
+          <label
+            >Eye style<select data-setting="eyeStyle">
+              <option value="round">Round</option>
+              <option value="soft">Soft</option>
+              <option value="line">Simple</option>
+            </select></label
+          ><label
+            >Character tint<input
+              data-setting="bodyColor"
+              type="color"
+              value="#b4a0fa" /></label
+          ><label
+            ><input data-setting="showEyes" type="checkbox" checked /> Add
+            tracked eyes</label
+          ><label
+            ><input data-setting="showMouth" type="checkbox" checked /> Add
+            tracked mouth</label
+          >
+        </div>
       </div>
     </section>
     <section class="card output">
       <div>
-        <h2>Ready for your scene</h2>
-        <p>
-          Add this URL as an OBS Browser Source. Set the source to 800 × 650.
+        <h2>Bring your look into OBS</h2>
+        <p id="output-instructions">
+          Add a Browser Source at 800 × 650. Keep SimpleStream open while
+          streaming.
         </p>
         <code id="overlay-url"></code>
+        <p id="output-status" class="hint">
+          PNG output uses a transparent canvas.
+        </p>
       </div>
       <button id="copy" class="subtle">Copy URL</button>
     </section>
-    <section class="card lens">
-      <span class="lens-icon">✦</span>
-      <div>
-        <h2>A place for your lenses</h2>
-        <p>
-          Snap Camera Kit is a planned integration. Lens access and Electron
-          compatibility still need validation.
-        </p>
-      </div>
-      <span class="badge">Planned</span>
-    </section>
   </div>
   <div class="avatar-library">
-    <section class="card">
+    <section class="card" data-png-only>
       <div class="card-heading">
         <div>
           <h2>Your looks</h2>
-          <p>A character for every kind of stream.</p>
+          <p>Saved on this computer. Ready for your next stream.</p>
         </div>
       </div>
       <div class="look-list">
-        <button class="look selected" id="built-in-look">
+        <button class="look selected" id="built-in-look" data-look="cat">
           <span class="look-thumb">✦</span
           ><span
             ><strong>Mooncat</strong
-            ><small>Built-in · ready to use</small></span
-          ><span>✓</span></button
+            ><small>Built-in · expressive PNG-style avatar</small></span
+          ></button
+        ><button class="look" data-look="ghost">
+          <span class="look-thumb ghost-thumb">☾</span
+          ><span
+            ><strong>Little spirit</strong
+            ><small>Built-in · soft and floaty</small></span
+          ></button
+        ><button class="look" data-look="robot">
+          <span class="look-thumb robot-thumb">▣</span
+          ><span
+            ><strong>Pixel pal</strong
+            ><small>Built-in · a little more electric</small></span
+          ></button
         ><label class="look import-look" for="upload"
           ><span class="look-thumb">＋</span
           ><span
             ><strong>Your own character</strong
-            ><small>Import a transparent PNG</small></span
+            ><small>Transparent PNG · up to 4 MB</small></span
           ></label
         >
-        <div id="current-asset" class="hint">Mooncat is your current look.</div>
+        <div id="saved-looks" class="saved-looks"></div>
+        <p id="current-asset" class="hint">Mooncat is your current look.</p>
+        <div id="look-actions" hidden>
+          <label class="field-label"
+            >Look name<input
+              id="look-name"
+              maxlength="60"
+              aria-label="Look name"
+          /></label>
+          <div class="look-actions">
+            <button id="save-look" class="subtle">Save look</button
+            ><button id="delete-look" class="text-button">Delete look</button>
+          </div>
+        </div>
       </div>
     </section>
-    <section class="card">
+    <section class="card" data-png-only>
+      <div class="card-heading">
+        <div>
+          <h2>Tracking feel</h2>
+          <p>Make it work with your face and camera.</p>
+        </div>
+      </div>
+      <div class="tracking-controls">
+        <label
+          >Smoothing
+          <input
+            id="tracking-smoothing"
+            type="range"
+            min="0"
+            max="250"
+            value="90" /></label
+        ><label
+          >Mouth sensitivity
+          <input
+            id="tracking-mouth"
+            type="range"
+            min="0.5"
+            max="4"
+            step="0.1"
+            value="1.8" /></label
+        ><label
+          >Blink sensitivity
+          <input
+            id="tracking-eyes"
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.1"
+            value="1.3" /></label
+        ><label
+          >Head movement
+          <input
+            id="tracking-motion"
+            type="range"
+            min="0"
+            max="2"
+            step="0.1"
+            value="1"
+        /></label>
+      </div>
+    </section>
+    <section class="card" data-png-only>
       <div class="card-heading">
         <div>
           <h2>Expression check</h2>
@@ -137,19 +313,126 @@
         ><button class="subtle" data-expression="blink">Blink</button
         ><button class="subtle" data-expression="talk">Talk</button>
       </div>
-      <p class="hint padded">Stop tracking to try these expressions.</p>
+      <div class="expression-buttons spaced">
+        <button class="subtle" data-expression="smile">Smile</button
+        ><button class="subtle" data-expression="turn">Head turn</button>
+      </div>
+      <p class="hint padded">Stop tracking to try a manual expression.</p>
     </section>
-    <section class="card padded">
-      <span class="eyebrow">YOUR WORKFLOW</span>
-      <h2 class="spaced">Pick. Preview. Personalize.</h2>
+    <section class="card lens-setup" data-lens-only hidden>
+      <div class="card-heading">
+        <div>
+          <h2>Snap Camera Kit</h2>
+          <p id="camera-kit-status">Developer setup required</p>
+        </div>
+        <span class="badge">AR</span>
+      </div>
+      <div class="padded">
+        <p>
+          Use lenses from your Camera Kit project, including lenses you publish
+          from Lens Studio.
+        </p>
+        <div class="look-actions spaced">
+          <button id="configure-snap" class="primary">Set up Camera Kit</button
+          ><button id="load-lenses" class="subtle">Load my lenses</button>
+        </div>
+        <p class="hint spaced">
+          Camera Kit downloads Snap resources and runs the selected lens. The
+          SDK may show Snap’s own terms prompt.
+        </p>
+      </div>
+    </section>
+    <section class="card" data-lens-only hidden>
+      <div class="card-heading">
+        <div>
+          <h2>Lens library</h2>
+          <p id="lens-library-status">
+            Connect your Lens Groups to see your lenses.
+          </p>
+        </div>
+      </div>
+      <div class="padded lens-catalog">
+        <input
+          id="lens-search"
+          placeholder="Search your lenses…"
+          aria-label="Search lenses"
+        />
+        <div id="lens-list" class="lens-list"></div>
+        <details>
+          <summary>Load a published lens by ID</summary>
+          <form id="custom-lens-form">
+            <label class="field-label"
+              >Lens ID<input
+                id="custom-lens-id"
+                required
+                maxlength="128" /></label
+            ><label class="field-label"
+              >Lens Group ID<input
+                id="custom-lens-group"
+                required
+                maxlength="128" /></label
+            ><button class="subtle spaced">Load lens</button>
+          </form>
+        </details>
+      </div>
+    </section>
+    <section class="card padded" data-lens-only hidden>
+      <span class="eyebrow">FROM LENS STUDIO TO YOUR STREAM</span>
+      <h2 class="spaced">Your lens, in your scene.</h2>
       <p>
-        Choose a look, align its features, then add the transparent output to
-        OBS. Your avatar keeps tracking while you use other pages.
+        Publish your lens to a Camera Kit Lens Group, load the group here, then
+        choose the lens. OBS receives the capture output over a local video
+        connection.
       </p>
       <p class="hint spaced">
-        PNG looks are available now. AR lenses and Lens Studio assets will have
-        their own library when Camera Kit is connected.
+        Lens Studio project files and ordinary Snapchat sharing links cannot be
+        imported directly. This build does not install a system-wide virtual
+        camera.
       </p>
+      <button id="open-lens-studio" class="text-button spaced">
+        Open Lens Studio ↗
+      </button>
     </section>
   </div>
 </div>
+<dialog id="camera-kit-dialog">
+  <form id="camera-kit-form">
+    <span class="eyebrow">CONNECT YOUR LENS STUDIO WORLD</span>
+    <h2 class="spaced">Set up Camera Kit</h2>
+    <p>
+      Create a Snap developer project, enable Camera Kit Web, and add this app’s
+      origin to its trusted origins:
+    </p>
+    <code id="snap-origin" class="setup-origin"></code
+    ><button id="open-snap-portal" type="button" class="subtle spaced">
+      Open Snap developer portal ↗</button
+    ><label
+      >Camera Kit Web API token<input
+        id="snap-api-token"
+        type="password"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Enter token; leave blank to keep the saved token" /></label
+    ><label
+      >Lens Group IDs<textarea
+        id="snap-group-ids"
+        rows="3"
+        placeholder="Separate groups with commas or new lines"
+        required
+      ></textarea>
+    </label>
+    <p class="hint">
+      The desktop app encrypts this configuration using Windows credential
+      protection. Nothing is added to the source repository. Use a staging token
+      for development; public release requires Snap approval.
+    </p>
+    <p id="snap-config-error" class="error" role="alert"></p>
+    <div class="dialog-actions">
+      <button id="clear-snap" type="button" class="text-button">
+        Forget settings</button
+      ><button type="button" data-close="camera-kit-dialog" class="subtle">
+        Cancel</button
+      ><button class="primary">Save settings</button>
+    </div>
+  </form>
+</dialog>

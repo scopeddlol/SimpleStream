@@ -1,6 +1,7 @@
 const { app, BrowserWindow, session } = require("electron");
 const path = require("node:path");
 const { installBrowserDocks } = require("./browser-docks.cjs");
+const { installAvatarTools } = require("./avatar-tools.cjs");
 if (process.env.SIMPLESTREAM_DATA_DIR)
   app.setPath("userData", process.env.SIMPLESTREAM_DATA_DIR);
 let local;
@@ -45,6 +46,12 @@ app
       },
     });
     installBrowserDocks(window, local.url);
+    installAvatarTools(
+      window,
+      local.url,
+      app.getPath("userData"),
+      local.outputKey,
+    );
     window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
     window.webContents.on("will-navigate", (event, url) => {
       if (!url.startsWith(allowed)) event.preventDefault();

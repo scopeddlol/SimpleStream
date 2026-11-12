@@ -1,3 +1,4 @@
+import { verifyAvatar } from "./avatar-checks.js";
 import { _electron as electron, expect } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import http from "node:http";
@@ -106,6 +107,7 @@ try {
     .click();
   await page.getByRole("button", { name: "Stop tracking" }).click();
   await page.getByRole("button", { name: "Neutral", exact: true }).click();
+  await verifyAvatar(app, page);
   await page.screenshot({ path: "artifacts/avatar.png", fullPage: true });
   await page.getByRole("button", { name: "New page" }).click();
   await page.locator("#page-name").fill("Command Center");
@@ -186,13 +188,14 @@ try {
       .getAllWebContents()
       .find((contents) => contents.getURL() === url);
     return guest.executeJavaScript(
-      "({title:document.title,node:typeof require,bridge:typeof browserDocks})",
+      "({title:document.title,node:typeof require,bridge:typeof browserDocks,avatarTools:typeof avatarTools})",
     );
   }, dockURL);
   expect(guest).toEqual({
     title: "Fixture browser dock",
     node: "undefined",
     bridge: "undefined",
+    avatarTools: "undefined",
   });
   await custom
     .getByRole("button", { name: "Rename page", exact: true })

@@ -4,7 +4,7 @@ const files = execFileSync("git", ["ls-files", "-z"], { encoding: "utf8" })
   .split("\0")
   .filter(Boolean);
 const privatePath =
-  /(^|\/)(?:\.private|\.local-data[^/]*|\.npm-cache|\.electron-cache|node_modules|artifacts|dist|release|coverage|test-results|playwright-report)(\/|$)|(^|\/)\.env(?:\.|$)|\.(?:pem|pfx|p12|key|sqlite\w*|db|log)$/i;
+  /(^|\/)(?:\.private|\.fixtures|\.builder-cache|\.local-data[^/]*|\.npm-cache|\.electron-cache|node_modules|artifacts|dist|release|coverage|test-results|playwright-report)(\/|$)|(^|\/)\.env(?:\.|$)|(^|\/)camera-kit\.json(?:\.tmp)?$|\.(?:pem|pfx|p12|key|sqlite\w*|db|log)$/i;
 const secrets = [
   /gh[pousr]_[A-Za-z0-9]{30,}/,
   /github_pat_[A-Za-z0-9_]{30,}/,

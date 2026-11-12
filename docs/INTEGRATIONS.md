@@ -54,7 +54,7 @@ Source: [OBS remote control guide](https://obsproject.com/kb/remote-control-guid
 
 ### Avatar engines
 
-Keep native PNG/MediaPipe as the lightweight default. A VTube Studio adapter can control supported Live2D model/hotkey/parameter workflows through its local plugin API and user-granted plugin authentication, without platform OAuth. Snap Camera Kit remains a distinct AR-lens integration with its own developer configuration and asset lifecycle. Do not imply that a PNG overlay supplies a full Live2D rig or that a third-party lens catalog is automatically available.
+Keep native PNG/MediaPipe as the lightweight default. A VTube Studio adapter can control supported Live2D model/hotkey/parameter workflows through its local plugin API and user-granted plugin authentication, without platform OAuth. Snap Camera Kit is implemented as a distinct, configurable AR-lens adapter with its own developer configuration and asset lifecycle; authorized lens rendering is pending project setup. Do not imply that a PNG overlay supplies a full Live2D rig or that a third-party lens catalog is automatically available.
 
 Source: [official VTube Studio API](https://github.com/DenchiSoft/VTubeStudio).
 
@@ -93,7 +93,7 @@ Keep webcam processing, layouts and stream summaries local by default. Avoid ser
 ### Later: deepen the platform
 
 - Secure remote companion, optional sync/backup and team permissions.
-- More avatar engines, expression presets, chat-triggered effects and Camera Kit lenses.
+- More avatar engines, richer expression presets, chat-triggered effects and production Camera Kit deployment.
 - Signed Windows installers and updates; macOS/Linux packaging after Windows is stable.
 
 The priorities above are product recommendations, not claims that these features are already shipped. Historical live-viewer averages should be computed from collected session samples or an authorized analytics source; do not substitute VOD view counts for live-viewer analytics.

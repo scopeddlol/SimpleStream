@@ -9,6 +9,337 @@
   --muted: #9b98ad;
   --accent: #c4aff6;
 }
+.mode-switch {
+  display: flex;
+  gap: 5px;
+  background: #191823;
+  border: 1px solid #383044;
+  border-radius: 12px;
+  padding: 5px;
+  width: max-content;
+  margin: -6px 0 24px;
+}
+.mode-switch button {
+  background: none;
+  color: #a99cb8;
+  padding: 11px 22px;
+}
+.mode-switch .selected {
+  background: #3d2d50;
+  color: #ead7ff;
+}
+.avatar-stage {
+  height: clamp(320px, 39vh, 500px);
+}
+.avatar-stage .stage-label {
+  z-index: 1;
+  pointer-events: none;
+}
+.avatar-stage .stage-caption {
+  pointer-events: none;
+}
+.lens-empty {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  max-width: 330px;
+  padding: 25px;
+}
+.lens-empty > span {
+  font-size: 48px;
+  color: #c2a4f4;
+}
+.lens-empty h3 {
+  font-size: 18px;
+}
+.lens-empty p {
+  font-size: 12px;
+}
+.camera-source {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr;
+  gap: 12px;
+  padding: 19px 20px 2px;
+}
+.camera-source label,
+.field-label,
+.style-controls > label {
+  font-size: 10px;
+  color: #b7a9c8;
+}
+.camera-source select,
+.field-label input,
+.style-controls select,
+.lens-catalog > input,
+.lens-catalog input {
+  width: 100%;
+  display: block;
+  background: #11131c;
+  color: #d9c9e8;
+  border: 1px solid #43364f;
+  border-radius: 7px;
+  padding: 9px;
+  font: inherit;
+  font-size: 11px;
+  margin-top: 7px;
+  min-width: 0;
+}
+.camera-options {
+  padding: 8px 22px 17px;
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  font-size: 10px;
+  color: #ab9cbd;
+}
+.camera-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.camera-options input,
+.style-controls input[type="checkbox"] {
+  accent-color: #c2a4f4;
+}
+.tracking-diagnostics {
+  display: flex;
+  gap: 18px;
+  padding: 13px 22px;
+  background: #12151e;
+  border-block: 1px solid #292333;
+  font-size: 10px;
+  color: #8f829e;
+  flex-wrap: wrap;
+}
+.tracking-diagnostics b {
+  color: #cdb6e7;
+  font-weight: 500;
+}
+#camera-preview {
+  width: calc(100% - 44px);
+  max-width: 320px;
+  height: auto;
+  border-radius: 10px;
+  margin: 18px 22px 0;
+  border: 1px solid #50405b;
+}
+.settings-title {
+  padding: 16px 22px 0;
+}
+.settings-title h3 {
+  font-size: 12px;
+  margin: 0 0 3px;
+}
+.settings-title p {
+  font-size: 10px;
+}
+.style-controls {
+  padding: 0 22px 23px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.style-controls > label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.style-controls select {
+  margin: 0;
+  width: 95px;
+}
+.style-controls input[type="color"] {
+  padding: 0;
+  border: 0;
+  background: none;
+  width: 35px;
+  height: 25px;
+  cursor: pointer;
+}
+.tracking-controls {
+  display: grid;
+  gap: 19px;
+  padding: 0 22px 23px;
+}
+.tracking-controls label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #b8a8c9;
+  gap: 18px;
+}
+.tracking-controls input {
+  width: 50%;
+  accent-color: #bca1ef;
+}
+.saved-looks {
+  display: grid;
+  gap: 10px;
+}
+.look-list .look {
+  width: 100%;
+  font-weight: 400;
+  justify-content: flex-start;
+}
+.look-list .look.selected > span:last-child:not(.look-thumb) {
+  margin-left: 0;
+}
+.look-list .look > span:not(.look-thumb) {
+  margin-left: 0;
+}
+.look-thumb.ghost-thumb {
+  background: #40534f;
+  color: #cfe5dc;
+}
+.look-thumb.robot-thumb {
+  background: #334d61;
+  color: #c0e2fa;
+}
+.look-list img.look-thumb {
+  object-fit: contain;
+  background: #242031;
+}
+.look-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lens-choice {
+  background: #24212f;
+  border: 1px solid #48374f;
+  text-align: left;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  color: #dbcae9;
+  white-space: normal;
+}
+.lens-choice.selected {
+  border-color: #bc96ec;
+  background: #493655;
+}
+.lens-choice strong {
+  font-size: 12px;
+}
+.lens-choice small {
+  font-size: 9px;
+  color: #9d8aad;
+  word-break: break-all;
+}
+.lens-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 17px;
+  max-height: 420px;
+  overflow: auto;
+}
+.lens-catalog details {
+  margin-top: 23px;
+  font-size: 11px;
+  color: #b3a0c6;
+}
+.lens-catalog summary {
+  cursor: pointer;
+}
+.lens-catalog .field-label {
+  display: block;
+  margin-top: 12px;
+}
+.setup-origin {
+  display: block;
+  user-select: all;
+  word-break: break-all;
+  font-size: 11px;
+  color: #d3b4f3;
+  background: #13101e;
+  padding: 11px;
+  border-radius: 7px;
+  margin-top: 14px;
+}
+dialog textarea {
+  display: block;
+  width: 100%;
+  margin-top: 9px;
+  padding: 12px;
+  background: #11111b;
+  color: #e1d3ed;
+  border: 1px solid #51405f;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  resize: vertical;
+}
+#camera-kit-dialog {
+  max-height: 90vh;
+  overflow: auto;
+}
+.preview-widget video {
+  width: 100%;
+  flex: 1;
+  object-fit: contain;
+  min-height: 0;
+}
+.avatar-card .toolbar {
+  flex-wrap: wrap;
+}
+.avatar-card #camera-message {
+  min-height: 42px;
+}
+@media (max-width: 1180px) {
+  .camera-source {
+    grid-template-columns: 1fr 1fr;
+  }
+  .camera-source > label:first-child {
+    grid-column: 1/-1;
+  }
+  .avatar-library:has(.lens-setup:not([hidden])) {
+    display: flex;
+  }
+  .mode-switch {
+    margin-top: 0;
+  }
+}
+@media (max-width: 699px) {
+  .camera-source {
+    padding-inline: 16px;
+    gap: 10px;
+  }
+  .camera-options,
+  .tracking-diagnostics {
+    padding-inline: 16px;
+    gap: 12px;
+  }
+  .style-controls {
+    padding-inline: 16px;
+    gap: 12px;
+  }
+  .avatar-stage {
+    height: 320px;
+  }
+  .mode-switch {
+    width: 100%;
+  }
+  .mode-switch button {
+    flex: 1;
+    padding: 11px;
+  }
+  .avatar-card .toolbar button,
+  .avatar-card .toolbar .button {
+    font-size: 10px;
+    padding: 9px;
+  }
+  .tracking-controls {
+    padding-inline: 18px;
+  }
+}
 * {
   box-sizing: border-box;
 }

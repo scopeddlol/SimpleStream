@@ -7,6 +7,10 @@ node_modules/
 .local-data*/
 artifacts/
 public/models/*.task
+public/generated/
+.fixtures/
+camera-kit.json
+camera-kit.json.tmp
 *.log
 .private/
 dist/

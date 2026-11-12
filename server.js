@@ -2,6 +2,12 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import {
+  defaultLayout,
+  neutralPose,
+  validateState,
+} from "./public/avatar-state.js";
+import { createMediaRelay } from "./media-relay.js";
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const mime = {
@@ -16,14 +22,28 @@ export async function startServer({ port = 32145 } = {}) {
   const clients = new Set();
   let state = {
     avatar: null,
-    pose: { mouth: 0, left: 0, right: 0, roll: 0 },
-    layout: { eyesY: 43, mouthY: 65, spacing: 20, size: 100 },
+    pose: { ...neutralPose },
+    layout: { ...defaultLayout },
+    outputMode: "avatar",
   };
+  const relay = createMediaRelay((active) => {
+    state.outputMode = active ? "lens" : "avatar";
+    for (const client of clients)
+      client.write(
+        "data: " +
+          JSON.stringify({
+            pose: state.pose,
+            layout: state.layout,
+            outputMode: state.outputMode,
+          }) +
+          "\n\n",
+      );
+  });
   let origin;
   const server = http.createServer(async (req, res) => {
     res.setHeader(
       "Content-Security-Policy",
-      "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'",
+      "default-src 'self'; script-src 'self' blob: 'wasm-unsafe-eval' https://cf-st.sc-cdn.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.sc-cdn.net https://*.snapar.com https://*.snapchat.com; connect-src 'self' https://*.snapar.com https://*.snapchat.com https://*.snapkit.com https://*.sc-cdn.net; worker-src 'self' blob:; media-src 'self' blob:; frame-src https://snap.com https://*.snap.com https://*.snapchat.com; object-src 'none'; frame-ancestors 'none'",
     );
     res.setHeader("X-Content-Type-Options", "nosniff");
     if (
@@ -35,6 +55,7 @@ export async function startServer({ port = 32145 } = {}) {
     }
     try {
       const url = new URL(req.url, origin);
+      if (await relay.handle(req, res, url)) return;
       if (req.method === "GET" && url.pathname === "/events") {
         res.writeHead(200, {
           "Content-Type": "text/event-stream",
@@ -65,46 +86,12 @@ export async function startServer({ port = 32145 } = {}) {
           body += chunk;
         }
         const input = JSON.parse(body);
-        const next = structuredClone(state);
-        if (input.avatar !== undefined) {
-          if (
-            input.avatar !== null &&
-            !(
-              typeof input.avatar === "string" &&
-              /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(input.avatar)
-            )
-          )
-            throw Error("PNG required");
-          next.avatar = input.avatar;
-        }
-        for (const [key, ranges] of Object.entries({
-          pose: {
-            mouth: [0, 1],
-            left: [0, 1],
-            right: [0, 1],
-            roll: [-0.5, 0.5],
-          },
-          layout: {
-            eyesY: [10, 80],
-            mouthY: [20, 90],
-            spacing: [5, 40],
-            size: [50, 130],
-          },
-        })) {
-          if (input[key])
-            for (const [name, [min, max]] of Object.entries(ranges)) {
-              const value = input[key][name];
-              if (value !== undefined) {
-                if (!Number.isFinite(value) || value < min || value > max)
-                  throw Error("Invalid value");
-                next[key][name] = value;
-              }
-            }
-        }
+        const next = validateState(state, input);
         state = next;
         const update = {
           pose: state.pose,
           layout: state.layout,
+          outputMode: state.outputMode,
           ...(input.avatar !== undefined ? { avatar: state.avatar } : {}),
         };
         for (const client of clients) {
@@ -155,7 +142,9 @@ export async function startServer({ port = 32145 } = {}) {
   origin = `http://127.0.0.1:${server.address().port}`;
   return {
     url: origin,
+    outputKey: relay.key,
     close: () => {
+      relay.close();
       for (const client of clients) client.end();
       server.close();
     },
